@@ -1,51 +1,42 @@
 package com.softserve.academy.models
 
-import com.softserve.academy.effects.AttackEffects
+import com.softserve.academy.strategy.AttackPowerStrategy
 import com.softserve.academy.strategy.AttackStrategy
-import com.softserve.academy.strategy.BasicAttack
-import com.softserve.academy.strategy.Defensible
 
 open class Warrior(
 
-    val stockHealth: Int = 50,
-    val effects: MutableList<AttackEffects> = mutableListOf(),
-    val attack: AttackStrategy = BasicAttack(5),
-
-    var isAlive: Boolean = true
+    val stockHealth: Int = ModelProps.Warrior.HEALTH,
+    val attackPower: AttackPowerStrategy = ModelProps.Warrior.ATTACK_POWER,
+    val attackStrategy: AttackStrategy = ModelProps.Warrior.ATTACK_TYPE_STRATEGY
 
 ) {
-    var health=stockHealth
+    var health = stockHealth
+        protected set
 
-    open fun performAttack(opponent: Warrior, ownArmy: Army? = null, enemyArmy: Army? = null) {
-        this hits opponent
+    val isAlive: Boolean
+        get() = health > 0
+
+    fun heal(healValue: Int) {
+
+        health += healValue
+        if (health > stockHealth) health = stockHealth
+    }
+
+    open fun acceptDamage(damage: Int) {
+        health -= damage
+        if (health <= 0) health = 0
+    }
+
+    open fun hits(opponent: WarriorNode) {
+        println("Stats Before Attacking ${this.toString()}")
+        attackStrategy.attack(this, opponent)
+        println("Stats After Attacking ${this.toString()}")
     }
 
     override fun toString(): String {
-        return "${this::class.simpleName}(health=$health, isAlive=$isAlive , effects=$effects ,attack=${attack.attackPower(this)})"
+        return "Name:${(this::class).simpleName} Health:$health AttackPower:${attackPower.attackPower(this)}"
     }
 }
 
-fun Warrior.markAsDead() {
-    this.isAlive = false
-}
 
-fun Warrior.revive() {
-    this.health = this.stockHealth
-    this.isAlive = true
-}
 
-infix fun Warrior.hits(other: Warrior) {
-    val damage = this.attack.attackPower(this)
-    val finalDamage = if (other is Defensible) {
-        other.defense.absorbDamage(damage)
-    } else {
-        damage
-    }
-    other.health -= finalDamage
-    if (other.health <= 0) {
-        other.markAsDead()
-    }
-
-    this.effects.forEach { it.applyEffect(attacker = this, defender = other, damageDealt = finalDamage) }
-
-}

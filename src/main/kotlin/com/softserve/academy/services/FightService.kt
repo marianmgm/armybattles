@@ -2,41 +2,42 @@ package com.softserve.academy.services
 
 import com.softserve.academy.models.Army
 import com.softserve.academy.models.Warrior
+import com.softserve.academy.models.WarriorNode
 
 
 object FightService {
 
-    fun fight(first: Warrior, second: Warrior, firstArmy: Army? = null, secondArmy: Army? = null): Boolean {
-        while (first.isAlive && second.isAlive) {
-            println("first attacker stats before attacking-${first.toString()}")
-            first.performAttack(second, firstArmy, secondArmy)
-            println("first attacker stats after attacking-${first.toString()}")
-            if (second.isAlive) {
-                println("second attacker stats before attacking-${second.toString()}")
-                second.performAttack(first, secondArmy, firstArmy)
-                println("second attacker stats after attacking-${second.toString()}")
+    fun fight(firstWarrior: Warrior, secondWarrior: Warrior): Boolean {
+        while (firstWarrior.isAlive && secondWarrior.isAlive) {
+
+            firstWarrior.hits(WarriorNode(secondWarrior))
+
+            if (secondWarrior.isAlive) {
+
+                secondWarrior.hits(WarriorNode(firstWarrior))
+
             }
+
         }
-        return first.isAlive
+        return firstWarrior.isAlive
     }
 
     fun fight(firstArmy: Army, secondArmy: Army): Boolean {
         while (firstArmy.isAlive && secondArmy.isAlive) {
-            val firstChampion = firstArmy.champion
-            val secondChampion = secondArmy.champion
+            val first = firstArmy.getFirstAliveUnit()
+            val second = secondArmy.getFirstAliveUnit()
 
-            fight(firstChampion, secondChampion, firstArmy, secondArmy)
+            if (first != null && second != null) {
+                val secondNode = secondArmy.getAsWarriorNode()!!
 
-            println("First Army status:")
-            firstArmy.getAliveWarriors().forEach { println(it) }
+                first.hits(secondNode)
 
-            println("Second Army status:")
-            secondArmy.getAliveWarriors().forEach { println(it) }
-
-            firstArmy.markFrontlinerIfDead()
-            secondArmy.markFrontlinerIfDead()
+                if (second.isAlive) {
+                    val firstNode = firstArmy.getAsWarriorNode()!!
+                    second.hits(firstNode)
+                }
+            }
         }
-
         return firstArmy.isAlive
     }
 }

@@ -3,36 +3,33 @@ package com.softserve.academy.models
 
 
 class Army {
-    private val aliveTroops = ArrayDeque<Warrior>()
-    private val deadTroops = ArrayDeque<Warrior>()
-
-    fun addUnit(warrior: Warrior) = aliveTroops.addLast(warrior)
-
-    fun markFrontlinerIfDead() {
-        if (aliveTroops.isNotEmpty() && !aliveTroops.first().isAlive) {
-            val deadWarrior = aliveTroops.removeFirst()
-            deadTroops.addLast(deadWarrior)
-        }
-    }
+    private val units: MutableList<Warrior> = mutableListOf()
 
 
     val isAlive: Boolean
-        get() = aliveTroops.isNotEmpty()
+        get() = units.any { it.isAlive }
 
+    fun addUnit(unit: Warrior) {
+        units.add(unit)
+    }
 
-    val champion: Warrior
-        get() = aliveTroops.firstOrNull() ?: throw Exception("No champion found")
+    fun getFirstAliveUnit(): Warrior? {
+        return units.firstOrNull { it.isAlive }
+    }
 
+    fun getAsWarriorNode(): WarriorNode?{
+        val aliveUnits=units.filter{it.isAlive}
 
-    fun getAliveWarriors(): List<Warrior> = aliveTroops.toList()
+        return linkToNodes(aliveUnits)
+    }
 
-
-    fun revive(amount: Int) {
-        repeat(amount) {
-            val revived = deadTroops.removeFirstOrNull() ?: return
-            revived.revive()
-            aliveTroops.addLast(revived)
+    fun linkToNodes(warriors: List<Warrior>): WarriorNode? {
+        if (warriors.isEmpty()) return null
+        var current: WarriorNode? = null
+        for (warrior in warriors.reversed()) {
+            current = WarriorNode(warrior, current)
         }
+        return current
     }
 
 }

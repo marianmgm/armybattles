@@ -15,9 +15,9 @@ class DefenderTest {
         FightService.fight(defender, rookie)
 
         assertTrue(defenderInitialHealth == defender.health) {
-            "Defender should not heal " +
-                    "himself when defending from Unit " +
-                    "that has attack power under the Defense Value"
+            """Defender should not heal
+                    himself when defending from Unit 
+                    that has attack power under the Defense Value"""
         }
 
     }

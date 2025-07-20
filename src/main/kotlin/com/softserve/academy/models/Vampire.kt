@@ -1,11 +1,15 @@
 package com.softserve.academy.models
 
-import com.softserve.academy.effects.VampirismEffect
-import com.softserve.academy.strategy.BasicAttack
 
+class Vampire(val vampirismPercentage: Int = ModelProps.Vampire.VAMPIRISM_PERCENTAGE) : Warrior(
+    stockHealth = ModelProps.Vampire.HEALTH,
+    attackPower = ModelProps.Vampire.ATTACK_POWER,
+) {
 
-class Vampire : Warrior(
-    stockHealth = 40,
-    attack = BasicAttack(4),
-    effects = mutableListOf(VampirismEffect(50))
-)
+    override fun hits(opponent: WarriorNode) {
+        val initialHealth = opponent.warrior.health
+        super.hits(opponent)
+        val damageDealt = (initialHealth - opponent.warrior.health).coerceAtLeast(0)
+        this.heal((damageDealt*vampirismPercentage)/100)
+    }
+}

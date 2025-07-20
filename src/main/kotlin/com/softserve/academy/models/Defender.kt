@@ -1,10 +1,19 @@
 package com.softserve.academy.models
 
-import com.softserve.academy.strategy.BasicAttack
-import com.softserve.academy.strategy.BasicDefenseStrategy
 import com.softserve.academy.strategy.DefenseStrategy
-import com.softserve.academy.strategy.Defensible
 
 class Defender(
-    override val defense: DefenseStrategy = BasicDefenseStrategy(2)
-) : Warrior(stockHealth=60,attack = BasicAttack(3)), Defensible
+    val defenseStrategy: DefenseStrategy = ModelProps.Defender.DEFENSE_STRATEGY
+) : Warrior(
+    stockHealth = ModelProps.Defender.HEALTH,
+    attackPower = ModelProps.Defender.ATTACK_POWER
+) {
+
+    override fun acceptDamage(damage: Int) {
+        super.acceptDamage(defenseStrategy.absorbDamage(damage))
+    }
+
+    override fun toString(): String {
+        return "Name:${(this::class).simpleName} Health:$health AttackPower:${attackPower.getAttackValue()} Defense:${defenseStrategy.getDefenseValue()}"
+    }
+}
