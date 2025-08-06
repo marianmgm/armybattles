@@ -41,4 +41,59 @@ class FightTest {
 
         assertFalse(res) { "Warrior should lose to Knight" }
     }
+    @Test
+    @DisplayName("2. Fight")
+    fun `Knight wins against Warrior`() {
+        val ramon = Knight()
+        val slevin = Warrior()
+        val result = fight(ramon, slevin)
+        assertEquals(true, result)
+    }
+
+    @Test
+    @DisplayName("3. Fight")
+    fun `One Warrior stays alive after fight`() {
+        val bob = Warrior()
+        val mars = Warrior()
+        fight(bob, mars)
+        assertTrue(bob.isAlive)
+    }
+
+    @Test
+    @DisplayName("4. Fight")
+    fun `Knight survives after fight with Warrior`() {
+        val zeus = Knight()
+        val godkiller = Warrior()
+        fight(zeus, godkiller)
+        assertTrue(zeus.isAlive)
+    }
+
+    @Test
+    @DisplayName("5. Fight")
+    fun `One Warrior dies after fighting another Warrior`() {
+        val husband = Warrior()
+        val wife = Warrior()
+        fight(husband, wife)
+        assertFalse(wife.isAlive)
+    }
+
+    @Test
+    @DisplayName("6. Fight")
+    fun `Knight survives after fighting Warrior`() {
+        val dragon = Warrior()
+        val knight = Knight()
+        fight(dragon, knight)
+        assertTrue(knight.isAlive)
+    }
+
+    @Test
+    @DisplayName("7. Fight")
+    fun `Knight dies after fighting two Warriors sequentially`() {
+        val unit1 = Warrior()
+        val unit2 = Knight()
+        val unit3 = Warrior()
+        fight(unit1, unit2)
+        val result = fight(unit2, unit3)
+        assertEquals(false, result)
+    }
 }
